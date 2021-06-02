@@ -32,36 +32,46 @@ class HexapodControl(RobotControl):
     def __init__(self):
         super(HexapodControl, self).__init__(robot_type='hexapod')
         rospy.loginfo("hexapod setup complete")
-        self.holdNeutral()
         time.sleep(2.0)
 
 
         lowdif = 10000
         currturn = 0
-        currSensVals = [self.getSensorValue('left'), self.getSensorValue('right'), self.getSensorValue('front')]
+        currSensVals = [self.getSensorValue('left'), self.getSensorValue('front'), self.getSensorValue('right')]
+        print("Current sensors values.")
+        print(currSensVals)
+        csv_file_object = csv.reader(open("training_data_B.csv", 'r'), delimiter = ",")
+        for row in csv_file_object:
+            for x in range(0,4):
+                row[x] = float(row[x])
 
-        with open('data.csv', 'r') as file:
-            reader = csv.reader(file)
-            compSensVals = reader.__next__()
-            dif = self.difference(currSensVals, compSensVals)
+            dif = self.difference(currSensVals, row)
 
             if dif < lowdif:
                 lowdif = dif
-                currturn = compSensVals[3]
-            
+                currturn = row[3]
+
+
         #main control loop
-            while not rospy.is_shutdown(): 
-                if currturn == 1:
-                    self.turnLeft90()
-                
-                if currturn == 2:
-                    self.turnRight90()
+        while not rospy.is_shutdown(): 
+            if currturn == 1:
+                print("Turning left.")
+                self.turnLeft90()
+                return 
 
-                if currturn == 3:
-                    self.turnAround180()
+            if currturn == 2:
+                print("Turning right.")
+                self.turnRight90()
+                return
 
-                if currturn == 4:
-                    return
+            if currturn == 3:
+                print("Turning around.")
+                self.turnAround180()
+                return 
+
+            if currturn == 4:
+                print("Not turning.")
+                return
             
     def difference(self, x, y):
         return abs((x[0] - y[0])) + abs((x[1] - y[1])) + abs((x[2] - y[2]))
