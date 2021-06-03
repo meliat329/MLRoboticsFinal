@@ -34,12 +34,14 @@ class HexapodControl(RobotControl):
         rospy.loginfo("hexapod setup complete")
         time.sleep(2.0)
 
-
+        #set a high value for the lowest possible difference so it can be replaced 
         lowdif = 10000
         currturn = 0
+        #get the sensor values from the robot
         currSensVals = [self.getSensorValue('left'), self.getSensorValue('front'), self.getSensorValue('right')]
         print("Current sensors values.")
         print(currSensVals)
+        #open the training data and scan through it with the difference function to find the nearest neighbor
         csv_file_object = csv.reader(open("training_data_B.csv", 'r'), delimiter = ",")
         for row in csv_file_object:
             for x in range(0,4):

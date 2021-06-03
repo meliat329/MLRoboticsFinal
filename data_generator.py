@@ -1,6 +1,7 @@
 import csv
 import random
 
+
 sensor_sets = {}
 # for each set of sets { (Left, Center, Right): TURN } TURN is 1: left, 2: right, 3: around, 4: none
 sensor_sets["training_data_A"] = {} 
@@ -8,6 +9,8 @@ sensor_sets["training_data_B"] = {}
 sensor_sets["test_data_A"] = {}
 sensor_sets["test_data_B"] = {}
 
+#this is the direct functionality we are trying to emulate with the machine learning,
+#  so it will provide the correct response for the training data
 def get_turn_from_sensors(sensor_set):
     wall_dist = 0.4
     wall_dist_margin_of_error = 0.01
@@ -37,11 +40,11 @@ def get_turn_from_sensors(sensor_set):
     else: #no sensors activated or tunnel 
         return 4 #none  
 
-#training A
+#training A (only around the center of the cell with slight variance for each turn type)
 for i in range(10):
     #generate random sensor values for a robot placed in the center of the cell
-    generated_over = 0.5 + 0.09*random.random()
-    generated_under = 0.5 + 0.09*random.random()
+    generated_over = 0.3 + 0.09*random.random()
+    generated_under = 0.3 + 0.09*random.random()
     #right side wall
     sensor_set = ( -1000, -1000, generated_under )
     sensor_sets["training_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
@@ -79,7 +82,7 @@ for i in range(10):
     sensor_sets["training_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
 
 
-#training B
+#training B (a wide range of placement values for the robot all over the cell)
 for i in range(1000):
     location = i%10 * 0.1 #decimeter range from sensors touching the wall to edge of the cell
     #generate random sensor values for a robot placement
@@ -118,43 +121,43 @@ for i in range(10):
     #COPIED CODE FROM TRAINING A
 
     #generate random sensor values for a robot placed in the center of the cell
-    generated_over = 0.5 + 0.09*random.random()
-    generated_under = 0.5 + 0.09*random.random()
+    generated_over = 0.3 + 0.09*random.random()
+    generated_under = 0.3 + 0.09*random.random()
     #right side wall
     sensor_set = ( -1000, -1000, generated_under )
-    sensor_sets["training_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
+    sensor_sets["test_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
     sensor_set = ( -1000, -1000, generated_over )
-    sensor_sets["training_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
+    sensor_sets["test_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
     #left side wall
     sensor_set = ( generated_under, -1000, -1000 )
-    sensor_sets["training_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
+    sensor_sets["test_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
     sensor_set = ( generated_over, -1000, -1000 )
-    sensor_sets["training_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
+    sensor_sets["test_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
     #front obstacle
     sensor_set = ( -1000, generated_under,  -1000 )
-    sensor_sets["training_data_A"][sensor_set] = get_turn_from_sensors(sensor_set)
+    sensor_sets["test_data_A"][sensor_set] = get_turn_from_sensors(sensor_set)
     sensor_set = ( -1000, generated_under,  -1000 ) 
-    sensor_sets["training_data_A"][sensor_set] = get_turn_from_sensors(sensor_set)  
+    sensor_sets["test_data_A"][sensor_set] = get_turn_from_sensors(sensor_set)  
 
     #left corner obstacle
     sensor_set = ( generated_under, generated_over,  -1000 )
-    sensor_sets["training_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
+    sensor_sets["test_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
     sensor_set = ( generated_over, generated_under,  -1000 ) 
-    sensor_sets["training_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
+    sensor_sets["test_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
     #right corner obstacle
     sensor_set = ( -1000, generated_over, generated_under )
-    sensor_sets["training_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
+    sensor_sets["test_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
     sensor_set = ( -1000, generated_under, generated_over )
-    sensor_sets["training_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
+    sensor_sets["test_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
     #dead end obstacle
     sensor_set = ( generated_under, generated_over, generated_over )
-    sensor_sets["training_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
+    sensor_sets["test_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
     sensor_set = ( generated_over, generated_under, generated_under )
-    sensor_sets["training_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
+    sensor_sets["test_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
 
     #no sensors 
     sensor_set = ( -1000, -1000, -1000 )
-    sensor_sets["training_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
+    sensor_sets["test_data_A"][sensor_set] = get_turn_from_sensors(sensor_set) 
 
 #test data B
 for i in range(1000):
@@ -164,37 +167,41 @@ for i in range(1000):
     generated_num = location + 0.09*random.random()
     #right side wall 
     sensor_set = ( -1000, -1000, generated_num ) 
-    sensor_sets["training_data_B"][sensor_set] = get_turn_from_sensors(sensor_set)
+    sensor_sets["test_data_B"][sensor_set] = get_turn_from_sensors(sensor_set)
 
     #left side wall
     sensor_set = ( generated_num, -1000, -1000 )
-    sensor_sets["training_data_B"][sensor_set] = get_turn_from_sensors(sensor_set) 
+    sensor_sets["test_data_B"][sensor_set] = get_turn_from_sensors(sensor_set) 
 
     #front obstacle
     sensor_set = ( -1000, generated_num,  -1000 ) 
-    sensor_sets["training_data_B"][sensor_set] = get_turn_from_sensors(sensor_set)
+    sensor_sets["test_data_B"][sensor_set] = get_turn_from_sensors(sensor_set)
 
 
     #left corner obstacle
     sensor_set = ( generated_num, generated_num,  -1000 ) 
-    sensor_sets["training_data_B"][sensor_set] = get_turn_from_sensors(sensor_set) 
+    sensor_sets["test_data_B"][sensor_set] = get_turn_from_sensors(sensor_set) 
 
     #right corner obstacle
     sensor_set = ( -1000, generated_num, generated_num )
-    sensor_sets["training_data_B"][sensor_set] = get_turn_from_sensors(sensor_set) 
+    sensor_sets["test_data_B"][sensor_set] = get_turn_from_sensors(sensor_set) 
 
     #dead end obstacle
     sensor_set = ( generated_num, generated_num, generated_num )
-    sensor_sets["training_data_B"][sensor_set] = get_turn_from_sensors(sensor_set) 
+    sensor_sets["test_data_B"][sensor_set] = get_turn_from_sensors(sensor_set) 
 
     #no sensors 
     sensor_set = ( -1000, -1000, -1000 )
-    sensor_sets["training_data_B"][sensor_set] = get_turn_from_sensors(sensor_set) 
+    sensor_sets["test_data_B"][sensor_set] = get_turn_from_sensors(sensor_set) 
 
+
+#if you want to add a header to each with left, front,right, action
+#file_writer.writerow(["left", "front", "right", "action"]) first 
 
 this = sensor_sets["training_data_A"]
 with open("training_data_A" + '.csv', mode='w') as file:
     file_writer = csv.writer(file, delimiter=',',  quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    
     for set in this:
         row = [set[0], set[1], set[2], this[set]]
         print(row)
